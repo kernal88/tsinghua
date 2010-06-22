@@ -1,0 +1,29 @@
+#Please Do not delete this comment line.
+SERVER this_host 001e6849c47d
+VENDOR vtech
+USE_SERVER
+INCREMENT host_linux_x86_64 vtech 4.0 19-jan-2011 300 \
+	VENDOR_STRING=all;academic ISSUER=Virtutech ISSUED=19-jan-2010 \
+	NOTICE="Academic License-The George Washington University" \
+	SN=vt_academic_2009_simics4.0_554 START=18-jan-2010 \
+	SIGN=05DAE236ECF4
+INCREMENT host_solaris_v9 vtech 4.0 19-jan-2011 300 \
+	VENDOR_STRING=all;academic ISSUER=Virtutech ISSUED=19-jan-2010 \
+	NOTICE="Academic License-The George Washington University" \
+	SN=vt_academic_2009_simics4.0_554 START=18-jan-2010 \
+	SIGN=52F8AD2EFF4A
+INCREMENT host_linux_x86 vtech 4.0 19-jan-2011 300 \
+	VENDOR_STRING=all;academic ISSUER=Virtutech ISSUED=19-jan-2010 \
+	NOTICE="Academic License-The George Washington University" \
+	SN=vt_academic_2009_simics4.0_554 START=18-jan-2010 \
+	SIGN=6F644D887D1E
+INCREMENT simics_builder vtech 4.0 19-jan-2011 300 \
+	VENDOR_STRING=all;academic ISSUER=Virtutech ISSUED=19-jan-2010 \
+	NOTICE="Academic License-The George Washington University" \
+	SN=vt_academic_2009_simics4.0_554 START=18-jan-2010 \
+	SIGN=A3D169A45B9C
+INCREMENT host_windows_x86 vtech 4.0 19-jan-2011 300 \
+	VENDOR_STRING=all;academic ISSUER=Virtutech ISSUED=19-jan-2010 \
+	NOTICE="Academic License-The George Washington University" \
+	SN=vt_academic_2009_simics4.0_554 START=18-jan-2010 \
+	SIGN=5F472B9465CE

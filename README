@@ -1,0 +1,53 @@
+dir:
+---
+o skseye
+    |____ doc : 
+    |____ src
+
+o bsp
+    |____ doc
+
+o simics
+    |____ doc
+
+
+git user steps: 
+--------------
+  webpage: www.github.com
+  user: oscenter
+  pwd:  oscenter
+
+1. install git:
+  $ sudo aptitude install git-core
+
+2.setup git:
+  $ git config --global user.name "Your Name"
+  $ git config --global user.email oscenter.lei@gmail.com
+
+3.setup ssh key:
+  $ cd ~/.ssh
+  $ ssh-keygen -t rsa -C "oscenter.lei@gmail.com"       
+
+4.install xclip:
+  $ sudo apt-get install xclip
+  $ cat ~/.ssh/id_rsa.pub | xclip -sel clip
+
+5.add webpage id_key:
+
+6.test ssh git server:
+  $ ssh git@github.com
+
+7.git user steps[NEW]:
+  $ mkdir th
+  $ cd th
+  $ git init
+  $ touch README
+  $ git add README
+  $ git commit -m 'first commit'
+  $ git remote add origin git@github.com:oscenter/th.git
+  $ git push origin master
+
+7.Existing Git Repo?
+  $ cd existing_git_repo
+  $ git remote add origin git@github.com:oscenter/th.git
+  $ git push origin master

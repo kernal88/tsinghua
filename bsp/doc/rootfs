@@ -1,0 +1,107 @@
+制作根文件系统
+make usb boot:
+-------------
+ root@/root> mkfs.ext2 -I 128 /dev/sda1
+ root@/root> mount /dev/sda1 /mnt
+ root@/root> grub-install --root-directory=/mnt /dev/sda
+
+Probing devices to guess BIOS drives. This may take a long time.
+Due to a bug in xfs_freeze, the following command might produce a segmentation
+fault when /mnt/boot/grub is not in an XFS filesystem. This error is harmless and
+can be ignored.
+xfs_freeze: specified file ["/mnt/boot/grub"] is not on an XFS filesystem
+Installation finished. No error reported.
+This is the contents of the device map /mnt/boot/grub/device.map.
+Check if this is correct or not. If any of the lines is incorrect,
+fix it and re-run the script `grub-install'.
+
+(fd0)	/dev/fd0
+(hd0)	/dev/sda
+(hd1)	/dev/sdb
+(hd2)	/dev/sdc
+
+复制kernel文件:
+-------------
+ root@/root> cp bzImage_z530 /mnt/boot/bzImage
+ root@/root> tar xvf z530fs_st -C /mnt
+修改启动参数从usrt启动:
+----------------------
+root@/root> vim /mnt/boot/menu.lst
+title           WRLinux on Portwell NANO-8044 ITX board
+root            (hd0,0)
+kernel          /boot/bzImage root=/dev/sda1 rw console=ttyS0,115200 reboot=acpi rootdelay=1
+quiet
+savedefault
+
+VGA boot:
+--------
+ root@/root> vim /mnt/boot/menu.lst
+title           WRLinux on Portwell NANO-8044 ITX board
+root            (hd0,0)
+kernel          /boot/bzImage root=/dev/sda1 rw vga=0xf00 reboot=acpi rootdelay=
+1 ip=dhcp
+quiet
+savedefault
+
+
+make jffs2 and cramfs: 
+---------------------
+1,配置根文件系统的大小。
+root@localhost:/root> cat /proc/mtd
+dev:    size   erasesize name
+mtd0: 00800000 00020000 "User FS"
+mtd1: 03600000 00020000 "Root Filesystem"
+mtd2: 0c200000 00020000 "Home Filesystem"
+      --------
+
+$ vim   wrlinux-3.0/layers/pek-wrll-bsps/templates/board/raza_xls_atx_64_be/config.sh
+
+1 # RMI XLS ATX VA board configuration
+2
+3 TARGET_BOARD="raza_xls_atx_64_be"
+4 TARGET_LINUX_LINKS="vmlinux"
+5 LINUX_BOOT_IMAGE=vmlinux
+6 TARGET_SUPPORTED_KERNEL="standard"
+7 TARGET_SUPPORTED_ROOTFS="glibc_std glibc_small"
+8 BOOTIMAGE_JFFS2_ARGS="-b -e 128 --pad=0xc200000"       
+                                        ---------
+                                           \_______  这是表示大小
+9 TARGET_PLATFORMS="PNE"
+10 TARGET_PROCFAM="rmixlr"
+
+2,根据配置文件，重新配置编译环境。将根文件系统改为 glibc_small
+ $ ../../wrlinux-3.0/wrlinux/configure    \
+	--enable-board=raza_xls_atx_64_be \
+	--enable-kernel=standard          \
+	--enable-rootfs=glibc_small       \   <------ glibc_small
+	--enable-ccache=yes               \
+	--enable-jobs=10                  \
+	--with-layer=../../wrlinux-3.0/layers/pek-wrll-bsps
+
+ $ make -C build linux
+ $ make fs
+编译jffs2:
+---------
+ $ make boot-image-create BOOTIMAGE_FSTYPE=jffs2 BOOTIMAGE_TYPE=flash
+                                             \_____________________ 生成jffs2 rootfs
+编译carmfs:
+---------
+ $ make boot-image BOOTIMAGE_FSTYPE=cramfs-be BOOTIMAGE_TYPE=flash
+                                         \_____________________ 生成cramfs-be rootfs
+ $ cd exprot
+ $ scp raza_xls_atx_64_be-jffs2 root@128.224.165.175:/root
+
+3,登陆开发板
+ $ telnet 128.224.164.75 2005
+ $ ifconfig -i gmac0 -a 128.224.165.175 -g 128.224.165.1 -n 255.255.255.0
+ $ tftpc -s 128.224.165.20 -f /vlm-boards/17464/kernel
+ $ elfload
+ $ userapp console=ttyS0,38400 root=/dev/hda1 rw rootfstype=ext2 ip=128.224.165.175:128.224.165.20:128.224.165.1:255.255.255.0::eth0:
+ $ flash_eraseall /dev/mtd2
+ $ nandwrite -p /dev/mtd2 jffs2.img
+ $ mount -t jffs2 /dev/mtd2 /mnt
+ $ reboot
+ $ userapp console=ttyS0,38400 root=/dev/mtdblock2 rw rootfstype=jffs2 ip=128.224.165.175:128.224.165.20:128.224.165.1:255.255.255.0::eth0:
+
+4.成功的挂载用 mtdblock2 分区了根文件系统
+

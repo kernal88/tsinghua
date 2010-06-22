@@ -1,0 +1,16 @@
+windows vlm tools:
+-----------------
+ $ ssh -Y sliu1@pek-hig2.wrs.com /folk/vlm/bin/vlmstart
+
+auto compiler kernel and rootfs:
+-------------------------------
+ $ ssh sliu1@pek-build-vm8.wrs.com:/stored_builds/builds/2010-04-12-19.48-wrlinux/combos
+                                                                 \                   \______ rootfs
+                                                                  \_________________________ compiler date
+
+README test:
+-----------
+ $ sed -e 's/ $/[]/g' intel_atom_z530-README   <--- README file
+ $ sed -e 's/\t/[]/g' intel_atom_z530-README 
+
+

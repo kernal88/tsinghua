@@ -1,0 +1,90 @@
+1.先去网站下载，所需要的包。
+    Username: michaelkang
+    Password: OSslyuTi
+    http://www.virtutech.com/asr/download
+
+2.解压所有安装包，他们自己动解压到一个simics-4.0-install 目录下：
+   $ tar xf simics-pkg-simics-base-4.0.0-linux.tar
+   $ tar xf simics-pkg-firststeps-4.0.0-linux.tar
+   $ ls simics-4.0-install
+
+3.运行安装脚本：
+   $ cd simics-4.0-install
+   $ sudo ./install-simics.pl
+
+4.进行安装配置：
+1）Have you already signed a custom Simics Software License Agreement
+with Virtutech? (y, n) [n]: y
+
+2）Is your company located in one of the following areas: USA, Canada,
+Japan, the European Union? (y, n): y
+
+3）install-simics will now show you the Simics Software License Agreement
+for Simics 4.0 (revision 1.0). You can also read or print this agreement
+by opening the file ’SLA-1.0’ (in the current directory) in any text editor.
+To continue with the installation and review the terms of the SLA, enter ’y’
+To abort the installation, enter ’n’. (y, n) [y]: <ENTER>
+
+4）Do you accept the terms of the SLA? (accept, decline) [decline]: accept
+
+5）-> Looking for Simics packages in current directory...
+Enter a decryption key for package-1000-4.0.0-linux.tar.gz.tf [Abort]: <ENTER>
+0123456789ABCDEF0123456789ABCDEF
+Enter a decryption key for package-4005-4.0.0-linux.tar.gz.tf [Abort]: <ENTER>
+0123456789ABCDEF0123456789ABCDEF
+
+6）install-simics can install the following packages from the current directory:
+   Number  Name          Type    Version   Host       File
+    1      Simics-Base   simics  4.0.0     x86-linux  package-1000-4.0.0-[...]
+    2      Firststeps    addon   4.0.0     x86-linux  package-4005-4.0.0-[...]
+    3      All packages
+Please enter the numbers of the packages you want to install, as in "1 4 3"
+Package numbers, or Enter to [Abort]: 3 
+（注：如果要是把所有包全部解压后，这块可能不是3，但要选择 All packages）
+
+7）Enter a destination directory for installation [/opt/virtutech/simics-4.0/]: <ENTER>
+
+8）The following packages will be installed in /opt/virtutech/simics-4.0:
+   simics-base-4.0.0-linux.tar.gz (Simics-Base 4.0.0)
+   firststeps-4.0.0-linux.tar.gz (Firststeps 4.0.0)
+Do you wish to perform the installation? (y, n) [y]: y
+-> Testing simics-base-4.0.0-linux.tar.gz
+-> Installing simics-base-4.0.0-linux.tar.gz
+-> Testing firststeps-4.0.0-linux.tar.gz
+-> Installing firststeps-4.0.0-linux.tar.gz
+
+9）If you wish to, Simics can automatically install a license
+file in your newly installed Simics.
+Enter a license file name or Enter to [Skip]: simics-license.lic
+-> Copying simics-license.lic to /opt/virtutech/simics-4.0//simics-4.0.0/licenses
+
+10）install-simics has installed the following add-on package:
+   Firststeps  4.0.0  /opt/virtutech/simics-4.0//simics-firststeps-4.0.0
+Do you wish to make these add-on packages available in
+Simics-Base 4.0.0? (y, n) [y]: <ENTER>
+-> Making add-on package available in Simics-Base 4.0.0
+
+5.安装license:
+1.使用 lmutil hostid 查看本机的hostid.　看是那个网卡的地址。
+2.使用ifconfig 更改该网卡MAC地址。注：网卡设备必须是eth0。
+　$ ifconfig eth0 down
+　$ ifconfig eth0 hw ether  00:1e:68:49:c4:7d
+　$ ifconfig eth0 up
+3.使用lmutil hostid 查看本机的hostid 是否和文件中的一致.
+  $ cd /opt/virtutech/simics-4.0/simics-4.0.60/flexnet/amd64-linux/bin
+  $ ./lmutil hostid
+The FLEXnet host ID of this machine is "001e6849c47d"
+  $ ./lmgrd -c simics_4_0.lic       启动license
+  $ ./lmutil down                   关闭服务器
+
+6.安装完成后生成工作目录:
+  $ /opt/virtutech/simics-4.0/simics-4.0.0/bin/workspace-setup  simics-workspace
+  $ cd simics-workspace
+  $ ./simics-gui  
+
+  安装后的目录:
+  /opt/virtutech/simics-4.0/simics-4.0.0/bin/simics-gui
+
+
+
+
