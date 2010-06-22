@@ -85,6 +85,111 @@ The FLEXnet host ID of this machine is "001e6849c47d"
   安装后的目录:
   /opt/virtutech/simics-4.0/simics-4.0.0/bin/simics-gui
 
+o simics user step to step:
+--------------------------
+示例中simics 的安装目录为/opt/simics-4.0/
 
+1.建立工作目录work
+/opt/simics-4.0/simics-4.0.62/bin/workspace-setup work 
+2.进入目录
+cd work
+3.复制已有的模块（代码会被复制到module/sample-risc 目录中)
+./bin/workspace-setup --copy-device=sample-risc
+4.编译
+make
+5. 运行smple-risc 脚本
+./simics targets/cosim/queues-in-cosimulator.simics
+   
+    其调用的脚本为（.simics文件中会看到调用过程) ：
+    /opt/simics-4.0/simics-4.0.62/simics-model-builder-4.0.16/target/queues_in_cosimulator.py
 
+    脚本的作用:
+    1.创建的对象
+    CPU: sampel_risc0
+    Core: sample_core0 , sampel_core1
+    image: ram_iamge0, ram_image1 (文档中有提到，还不太理解)
+    ram: ram0, ram1
+    memory-space: phy_mem0, test0      (可理解为总线映射的对象)
+    cell: cosim_cell (simics的CPU调度时使用)
+    device: sample_dev0, sample_dev1 .
+    context: ctx0   (上下文的记录时使用，不用关心)
 
+    2.属性间的赋值。 （可理解为对象结构体间的赋值和对象间的调用关系）   
+    如:
+    sample_risc0.sim_core = conf.sim
+    sample_risc0.freq_mhz =  1.0
+
+    sample_core0.sample_risc = sample_risc0
+    sample_core0.physical_memory_space = phys_mem0
+    sample_core0.current_context_obj = ctx0
+    等号前为该对象的属性，在代码中可以看到。
+
+    sample_core0.queue = sample_risc0
+    queue可以理解为CPU和DEVICE 遵守的同一个时钟和时间队列。应该是simics管理，代码中没有该属性。
+   
+    注：该脚本内容可以按照每行手动输入，在命令前加＠即可。
+
+6. 查看该模块
+输入
+simics>load-modules
+可看到该模块被加载
+如：
+sample-risc                    Loaded  2504  2556   None          Yes   
+_________________________________________________
+
+命令行的使用 simics>
+1. 属性的使用
+    输入：
+    simics>sample_core0->
+    按table键 可看到其注册的属性。
+
+    适用于其它实现的对象(sample_risc0, sampel_core0, phy_mem0, ctx0, ram0, image0等)。
+
+2.状态的查看和注册命令的使用
+    输入:
+    simics>sample_core0.
+    按table键 可看到状态查看命令和注册的命令
+ 
+    适用于其它实现的对象(sample_risc0, sampel_core0, phy_mem0, ctx0, ram0, image0等)。
+
+    如
+    .list-interfaces
+    .log-level
+    .info
+    .status
+
+3. 一些simics 命令（详见simics reference manual 手册)
+    load-file   
+    load-binary
+    run
+    stop
+    stepi
+    step-cycle
+    reverse
+    log-level
+    pregs
+    disassemble
+    print-event-queue
+    set-pc
+    reg-reg
+    write-reg
+    get address
+    set address
+
+4.测试bin 文件的运行。
+    在附件中下载test.bin
+    输入
+    simics>load-file test.bin
+    simics> run
+    即可。
+
+    test.bin实现了5条指令的循环执行。内容如下：
+00:    20 00 00 04             // load 0x4 处的指令
+04:    30 00 00 0c             //保存到0xc 处
+08:    40 00 00 10             //cpu_idle 0x10   
+0C:    10 00 00 00            //跳转指令，会被修改   
+10:    10 00 00 00            // 跳转到0x0 处执行。
+
+    可在toy-risc-core.c 　419行 指令实现的switch 结构中添加打印查看。
+    指令结构的描述在toy-risc-core.c 35行的注解中.
+ 
