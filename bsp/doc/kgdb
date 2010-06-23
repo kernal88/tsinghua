@@ -1,0 +1,120 @@
+kgdboc step:
+-----------
+1.配置kernel.
+ $ make menuconfig
+
+2. 设置grub启动参数
+ 1)修改grub启动选项
+   kernel /boot/bzImage root/dev/sda1 console=ttyS0,115200 kgdboc=ttyS0,115200 kgdbwait
+ 2)引导kernel，会出现下面信息。
+   Kgdb:Registered I/O driver kgdboc.
+   Kgdb:Waiting for connection from remote gdb...
+
+3.设置 agent-proxy
+ 1)先登陆到编译的服务器上
+   $ ssh root@localhost
+ 2)进行开发板编译目录下
+   $ cd kernel/
+ 3)使用agent-proxy命令，将开发板端口从新，重定向2个端口。(开发板 telnet IP：128.224.148.62 端口：2007)
+   $ host-cross/bin/agent-proxy 5555^5556 128.224.148.62 2007
+ 4)退出已连的telnet.
+
+4.telnet 重新连接
+ 1)再启动一个新的窗口，并登陆到编译的服务器上
+   $ ssh root@localhost
+ 2)进行开发板编译目录下
+   $ cd kernel/
+ 3)使用新的端口：5555 连接 telnet
+   $ telnet localhost 5555
+
+5. 用gdb调试kernel
+ 1)再启动一个新的窗口，并登陆到编译的服务器上
+   $ ssh root@localhost
+ 2)进行开发板编译目录下
+   $ cd kernel/
+   $ cd export/
+ 3)使用windriver带的gdb调试vmlinux
+   $ linux-gnu-gdb vmlinux
+ 4)gdb 连接开发板进行调试
+   (gdb) target remote localhost:5556
+
+
+附 信息：
+kgdboc debuger infomation:
+-------------------------
+ $ linux-gnu-gdb vmlinux
+  GNU gdb (Linux Sourcery G++ 4.3-237) 6.8.50.20080821-cvs
+  Copyright (C) 2008 Free Software Foundation, Inc.
+  License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+  This is free software: you are free to change and redistribute it.
+  There is NO WARRANTY, to the extent permitted by law. Type "show copying"
+  and "show warranty" for details.
+  This GDB was configured as "--host=i686-pc-linux-gnu --target=i586-wrs-linux-gnu".
+  For bug reporting instructions, please see:
+  <support@windriver.com>...
+  
+  (gdb) target remote localhost:5556
+  
+  Remote debugging using localhost:5556
+  kgdb_breakpoint ()
+  at kernel/kgdb.c:1879
+  1879 wmb(); /* Sync point after breakpoint /
+  
+  (gdb) list
+
+  1874 void kgdb_breakpoint(void)
+  1875 {
+  1876 atomic_set(&kgdb_setting_breakpoint, 1);
+  1877 wmb(); / Sync point before breakpoint /
+  1878 arch_kgdb_breakpoint();
+  1879 wmb(); / Sync point after breakpoint */
+  1880 atomic_set(&kgdb_setting_breakpoint, 0);
+  1881 }
+  1882 EXPORT_SYMBOL_GPL(kgdb_breakpoint);
+  1883
+
+  (gdb) b 1879
+
+  Breakpoint 1 at 0xffffffff80274d1e: file kernel/kgdb.c, line 1879. (5 locations)
+
+  (gdb) c
+
+  Continuing.
+
+
+
+kgdboE step:
+-----------
+0.编译kernel时,一定要把kgdboe选成模块方式.
+ $ make menuconfig
+
+
+1.开发板加载KGDBoE模块。
+  root# modprobe kgdboe kgdboe=@/eth0,@远程调试主机的地址/
+  root# modprobe kgdboe kgdboe=@10.0.0.1/eth1,@10.0.0.2/
+
+2.远程调试端：
+ 1)进行开发板编译目录下
+   $ cd kernel/
+   $ cd export/
+ 2)使用windriver带的gdb调试vmlinux
+   $ linux-gnu-gdb vmlinux
+ 3)gdb 连接开发板进行调试
+   (gdb) target remote udp:开发板IP地址:6443
+   (gdb) target remote udp:10.0.0.1:6443
+
+
+kgdbts step:
+-----------
+1.kernel menuconfig add kgdbts.
+ $ make menuconfig
+
+
+
+
+
+
+参考文献
+=======
+o Kgdbts:
+    http://tomoyo.sourceforge.jp/cgi-bin/lxr/source/drivers/misc/kgdbts.c
