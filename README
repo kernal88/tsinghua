@@ -1,14 +1,14 @@
 dir:
 ---
 o skseye
-    |____ doc : 
-    |____ src
+    -> doc : 
+    -> src
 
 o bsp
-    |____ doc
+    -> doc
 
 o simics
-    |____ doc
+    -> doc
 
 
 git user steps: 

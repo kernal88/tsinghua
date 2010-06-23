@@ -2,6 +2,10 @@ kgdboc step:
 -----------
 1.配置kernel.
  $ make menuconfig
+  Location:
+     -> kernel hacking
+           -> <*> KGDB: use kgdb over the serial console   
+           -> <M> 8250/16550 and compatible serial support 
 
 2. 设置grub启动参数
  1)修改grub启动选项
@@ -87,6 +91,10 @@ kgdboE step:
 -----------
 0.编译kernel时,一定要把kgdboe选成模块方式.
  $ make menuconfig
+  Location:
+     -> kernel hacking
+           -> <M> KGDB: On ethernet
+           -> <M> 8250/16550 and compatible serial support 
 
 
 1.开发板加载KGDBoE模块。
@@ -108,6 +116,9 @@ kgdbts step:
 -----------
 1.kernel menuconfig add kgdbts.
  $ make menuconfig
+  Location:
+     -> kernel hacking
+           -> [*]  KGDB: internal test suite
 
 
 
@@ -118,3 +129,5 @@ kgdbts step:
 =======
 o Kgdbts:
     http://tomoyo.sourceforge.jp/cgi-bin/lxr/source/drivers/misc/kgdbts.c
+o Kgdb:
+    refer/Use_Case_for_KGDB_3.0.doc
