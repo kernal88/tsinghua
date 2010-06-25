@@ -10,6 +10,8 @@ kgdboc step:
 2. 设置grub启动参数
  1)修改grub启动选项
    kernel /boot/bzImage root/dev/sda1 console=ttyS0,115200 kgdboc=ttyS0,115200 kgdbwait
+
+   $  echo "ttyS0,115200" > /sys/module/kgdboc/parameters/kgdboc
  2)引导kernel，会出现下面信息。
    Kgdb:Registered I/O driver kgdboc.
    Kgdb:Waiting for connection from remote gdb...
