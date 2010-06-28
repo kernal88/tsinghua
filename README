@@ -1,11 +1,17 @@
 dir:
 ---
-o skseye
-    -> doc : 
-    -> src
+o bash
+    -> doc
 
 o bsp
     -> doc
+
+o cisco
+    -> ccna
+
+o skseye
+    -> doc 
+    -> src
 
 o simics
     -> doc
